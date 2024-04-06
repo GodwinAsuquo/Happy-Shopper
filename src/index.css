@@ -10,8 +10,22 @@ html {
   font-weight: 300;
 }
 
+.image {
+  background-image: url("./assets/test_rectangle (1).png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.image2 {
+  background-image: url("./assets/botm desktop.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 @media (max-width: 768px) {
   html {
-    padding: 20px; 
+    padding: 20px;
   }
 }
