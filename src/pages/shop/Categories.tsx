@@ -1,33 +1,16 @@
 import category_hero from "../../assets/category_hero.png";
 import arrow_down from "../../assets/arrow-down.png";
-import { similarProducts, extraServices } from "../../data";
-import { useEffect, useState } from "react";
+import { extraServices } from "../../utils/data";
 import BestSellersItem from "../../components/BestSellersItem";
 import woman from "../../assets/woman_holding_product.png";
+import ItemsPerSize from "../../utils/helpers/ItemsPerSize";
 
 const Categories = () => {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [displayedItems, setDisplayedItems] = useState(
-    similarProducts.slice(0, 4)
-  );
-  const [secondDisplayedItems, setSecondDisplayedItems] = useState(
-    similarProducts.slice(4, 8)
-  );
+  const items = ItemsPerSize();
 
-  useEffect(() => {
-    const handleChange = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleChange);
-  }, []);
+  const categoryItems = items.categoryItems;
 
-  useEffect(() => {
-    if (windowWidth <= 768) {
-      setDisplayedItems(similarProducts.slice(0, 4));
-      setSecondDisplayedItems(similarProducts.slice(4, 8));
-    } else {
-      setDisplayedItems(similarProducts.slice(0, 12));
-      setSecondDisplayedItems(similarProducts.slice(12, 20));
-    }
-  }, [windowWidth]);
+  const secondCategoryItems = items.secondCategoryItems;
 
   return (
     <section className="mb-48">
@@ -70,7 +53,7 @@ const Categories = () => {
 
       <section>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
-          {displayedItems.map((item) => {
+          {categoryItems.map((item) => {
             return <BestSellersItem key={item.id} {...item} />;
           })}
         </div>
@@ -90,7 +73,7 @@ const Categories = () => {
         </section>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[300px] lg:mt-[450px]">
-          {secondDisplayedItems.map((item) => {
+          {secondCategoryItems.map((item) => {
             return <BestSellersItem key={item.id} {...item} />;
           })}
         </div>

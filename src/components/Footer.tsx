@@ -2,7 +2,7 @@ import white_logo from "../assets/white_logo.png";
 
 const Footer = () => {
   return (
-    <footer className="absolute w-full left-0 bg-black  px-4 lg:px-16 pb-20 text-white">
+    <footer className=" absolute w-full left-0 bg-black  px-4 lg:px-16 pb-20 text-white">
       <div className="border lg:flex lg:items-center lg:justify-between border-gray-200 rounded-lg bg-white text-black p-7 -mt-32 lg:-mt-10 mb-20">
         <h2 className="font-normal text-2xl mb-7 lg:mb-0">
           Subscibe To Our Newsletter

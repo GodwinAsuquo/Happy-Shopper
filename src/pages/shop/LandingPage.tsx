@@ -2,34 +2,19 @@ import right_arrow from "../../assets/Line arrow-right.png";
 import who_are_we from "../../assets/who_are_we.png";
 import woman from "../../assets/woman_holding_product.png";
 import "../../index.css";
-import { bestSellers, categories } from "../../data";
 import CategoryItem from "../../components/CategoryItem";
-import { useEffect, useState } from "react";
 import BestSellersItem from "../../components/BestSellersItem";
+import ItemsPerSize from "../../utils/helpers/ItemsPerSize";
+import { useProducts } from "../../services/firebase/crudRequests";
+
+
 
 const LandingPage = () => {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [displayedItems, setDisplayedItems] = useState(categories.slice(0, 2));
-  const [sellerItems, setSellerItems] = useState(bestSellers.slice(0, 2));
+  const items = ItemsPerSize();
+  const categories = items.categoriesData;
+  // const bestSellers = items.bestsellersItems;
+  const products = useProducts();
 
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (windowWidth <= 768) {
-      setDisplayedItems(categories.slice(0, 2));
-      setSellerItems(sellerItems.slice(0, 2));
-    } else {
-      setDisplayedItems(categories.slice(0,7));
-      setSellerItems(bestSellers.slice(0, 4));
-    }
-  }, [windowWidth]);
 
   return (
     <section className="mb-[500px]">
@@ -75,6 +60,9 @@ const LandingPage = () => {
         <h2 className="mt-[550px] text-5xl max-w-[900px] mb-8">
           Customer Experience will always be our No.1 Priority
         </h2>
+
+    
+
         {/* analytics  */}
         <div className="grid grid-cols-2 lg:flex lg:justify-between">
           <div>
@@ -104,7 +92,7 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-12 mt-14">
-          {displayedItems.map((item) => {
+          {categories.map((item) => {
             return <CategoryItem key={item.id} {...item} />;
           })}
         </div>
@@ -119,7 +107,8 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-2 lg:flex gap-5 ">
-          {sellerItems.map((item) => {
+          {products.map((item) => {
+            console.log(typeof item.price);
             return <BestSellersItem key={item.id} {...item} />;
           })}
         </div>
@@ -161,7 +150,6 @@ const LandingPage = () => {
         </div>
         <img className="h-full " src={woman} alt="" />
       </section>
-
     </section>
   );
 };

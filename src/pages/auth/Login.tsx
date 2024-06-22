@@ -1,14 +1,59 @@
-import TextInput from "../../components/TextInput";
 import apple from "../../assets/apple.png";
 import google from "../../assets/google.png";
 import vitamin_c_up from "../../assets/Natural-Vitamin-C-250mg_1445x 1.png";
 import vitamin_c_down from "../../assets/second_bottle.png";
 import logo from "../../assets/logo.png";
 import { useState } from "react";
+import { createUser } from "../../services/firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToast } from "../../stateMgt/features/toast/toastSlice";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [signUp, setSignUp] = useState(false);
   const [signIn, setSignIn] = useState(true);
+  const [isLoading, setIsLoading] = useState(false)
+  const [userSignup, setUserSignup] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [user, setUser] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    console.log(userSignup);
+    if (userSignup.password !== userSignup.confirmPassword) {
+      console.log("Passwords do not match");
+      dispatch(
+        addToast({ id: 1, status: "error", description: "Passwords do not match", isClosable:true })
+      );
+    }
+    setIsLoading(true);
+    if (user.email && user.password) {
+      createUser(user).then((res) => {
+        if (res && res.user) {
+          navigate("/");
+        } else {
+          if (res && res.error) setError(res.error);
+        }
+      });
+    }
+    setUserSignup({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      password: "",
+      confirmPassword: "",
+    });
+  };
 
   return (
     <>
@@ -29,11 +74,11 @@ const Login = () => {
       )}
 
       {signUp ? (
-        <p className="lg:hidden text-center mt-4 lg:border-b py-5">
+        <p className="cursor-pointer lg:hidden text-center mt-4 lg:border-b py-5">
           Create an account
         </p>
       ) : (
-        <p className="lg:hidden text-center mt-4 lg:border-b py-5">
+        <p className="cursor-pointer lg:hidden text-center mt-4 lg:border-b py-5">
           Log into account
         </p>
       )}
@@ -45,7 +90,9 @@ const Login = () => {
             setSignUp(true);
             setSignIn(false);
           }}
-          className="text-center mt-4 lg:border-b py-5"
+          className={`cursor-pointer text-center mt-4 lg:border-b ${
+            signUp && "border-b-black font-normal"
+          } py-5`}
         >
           Create an account
         </p>
@@ -55,90 +102,175 @@ const Login = () => {
             setSignIn(true);
             setSignUp(false);
           }}
-          className="lg:inline text-center mt-4 lg:border-b py-5"
+          className={`cursor-pointer lg:inline text-center mt-4 lg:border-b ${
+            signIn && "border-b-black font-normal"
+          } py-5`}
         >
           Log into account
         </p>
       </div>
 
       {signUp && (
-        <form action="submit" className="lg:grid grid-cols-2 gap-4 lg:mt-5">
-          <TextInput label="First Name" placeholder="Quine" type="text" />
+        <form onSubmit={handleSubmit}>
+          <div className="lg:grid grid-cols-2 gap-4 lg:mt-5">
+            <div className="mt-5">
+              <label className="block" htmlFor="First Name">
+                First Name
+              </label>
+              <input
+                className="focus:border-b focus:border-b-black outline-none  w-72 px-[1px] "
+                type="text"
+                placeholder="Quine"
+                required
+                value={userSignup.firstName}
+                onChange={(e) => {
+                  setUserSignup({ ...userSignup, firstName: e.target.value });
+                }}
+              />
+            </div>
 
-          <TextInput label="Last Name" placeholder="Bambam" type="text" />
+            <div className="mt-5">
+              <label className="block" htmlFor="Last Name">
+                Last Name
+              </label>
+              <input
+                className="focus:border-b focus:border-b-black outline-none  w-72 px-[1px] "
+                type="text"
+                placeholder="Bambam"
+                required
+                value={userSignup.lastName}
+                onChange={(e) => {
+                  setUserSignup({ ...userSignup, lastName: e.target.value });
+                }}
+              />
+            </div>
 
-          <TextInput
-            label="Email Address"
-            placeholder="Bambam@mail.com"
-            type="email"
-          />
+            <div className="mt-5">
+              <label className="block" htmlFor="Email Address">
+                Email Address
+              </label>
+              <input
+                className="focus:border-b focus:border-b-black outline-none  w-72 px-[1px] "
+                type="email"
+                placeholder="Bambam@mail.com"
+                required
+                value={userSignup.email}
+                onChange={(e) => {
+                  setUserSignup({ ...userSignup, email: e.target.value });
+                }}
+              />
+            </div>
 
-          <TextInput
-            label="Phone Number"
-            placeholder="+1 456 6543 8765"
-            type="number"
-          />
+            <div className="mt-5">
+              <label className="block" htmlFor="Phone Number">
+                Phone Number
+              </label>
+              <input
+                className="focus:border-b focus:border-b-black outline-none  w-72 px-[1px] "
+                type="number"
+                placeholder="+1 456 6543 8765"
+                value={userSignup.phoneNumber}
+                onChange={(e) => {
+                  setUserSignup({ ...userSignup, phoneNumber: e.target.value });
+                }}
+              />
+            </div>
 
-          <TextInput
-            label="Password"
-            placeholder="Enter Password"
-            type="password"
-          />
+            <div className="mt-5">
+              <label className="block" htmlFor="Enter Password">
+                Enter Password
+              </label>
+              <input
+                className="focus:border-b focus:border-b-black outline-none  w-72 px-[1px] "
+                type="password"
+                placeholder="Enter Password"
+                required
+                value={userSignup.password}
+                onChange={(e) => {
+                  setUserSignup({ ...userSignup, password: e.target.value });
+                }}
+              />
+              {error.length ? (
+                <p className="py-[20px] text-red-500">{error}</p>
+              ) : null}
+            </div>
 
-          <TextInput
-            label="Confirm Password"
-            placeholder="Re-Enter Password"
-            type="password"
-          />
+            <div className="mt-5">
+              <label className="block" htmlFor="Confirm Password">
+                Confirm Password
+              </label>
+              <input
+                className="focus:border-b focus:border-b-black outline-none  w-72 px-[1px] "
+                type="password"
+                placeholder="Re-Enter Password"
+                value={userSignup.confirmPassword}
+                onChange={(e) => {
+                  setUserSignup({
+                    ...userSignup,
+                    confirmPassword: e.target.value,
+                  });
+                }}
+              />
+            </div>
+          </div>
+
+          <p className="text-right mt-10 underline cursor-pointer">
+            Forgot Password?
+          </p>
+          <button
+            className="flex justify-center mt-10 bg-black text-white px-14 py-5 rounded-2xl mx-auto w-[60%] lg:w-[70%]"
+            type="submit"
+          >
+            Create account
+          </button>
+          <div className="flex items-start mt-5">
+            <input className="mt-[5px] mr-2" type="checkbox" />
+            <p>
+              I agree to the processing of my personal information and the Terms
+              & Conditions.
+            </p>
+          </div>
         </form>
       )}
 
       {signIn && (
-        <form action="submit">
+        <form onSubmit={handleSubmit}>
           <div className="block space-y-8">
-            <TextInput
-              label="Email Address"
-              placeholder="Bambam@mail.com"
-              type="email"
-            />
-            <TextInput
-              label="Password"
-              placeholder="Enter Password"
-              type="password"
-            />
+            <div className="mt-5">
+              <label className="block" htmlFor="Email Address">
+                Email Address
+              </label>
+              <input
+                className="focus:border-b focus:border-b-black outline-none  w-72 px-[1px] "
+                type="email"
+                placeholder="Bambam@mail.com"
+                value={user.email}
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
+              />
+            </div>
+
+            <div className="mt-5">
+              <label className="block" htmlFor="Password">
+                Password
+              </label>
+              <input
+                className="focus:border-b focus:border-b-black outline-none  w-72 px-[1px] "
+                type="password"
+                placeholder="Enter Password"
+                value={user.password}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
+              />
+            </div>
           </div>
+          <button
+            className="flex justify-center mt-10 bg-black text-white px-14 py-5 rounded-2xl mx-auto w-[70%]"
+            type="submit"
+          >
+            Log into account
+          </button>
         </form>
       )}
-      {!signUp && (
-        <p className="text-right mt-10 underline cursor-pointer">
-          Forgot Password?
-        </p>
-      )}
 
-      {signUp && (
-        <div className="flex items-start mt-5">
-          <input className="mt-[5px] mr-2" type="checkbox" />
-          <p>
-            I agree to the processing of my personal information and the Terms &
-            Conditions.
-          </p>
-        </div>
-      )}
-      {signUp ? (
-        <button
-          className="flex justify-center mt-10 bg-black text-white px-14 py-5 rounded-2xl mx-auto w-[60%] lg:w-[70%]"
-          type="button"
-        >
-          Create account
-        </button>
-      ) : (
-        <button
-          className="flex justify-center mt-10 bg-black text-white px-14 py-5 rounded-2xl mx-auto w-[60%] lg:w-[70%]"
-          type="button"
-        >
-          Log into account
-        </button>
-      )}
       <p className="my-5 text-gray-500 text-center">or</p>
 
       {signUp ? (
@@ -192,10 +324,12 @@ const Login = () => {
 
       <p className="mt-20">Since 2023 Happy Shopper. All Rights Reserved</p>
       <img
-        className="hidden lg:block fixed bottom-0 right-0 w-44"
+        className="hidden lg:block -z-10 fixed bottom-0 right-0 w-44"
         src={vitamin_c_down}
         alt="vitamin-c bottle image"
       />
+
+     
     </>
   );
 };

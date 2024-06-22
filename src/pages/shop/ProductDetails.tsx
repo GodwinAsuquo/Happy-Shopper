@@ -6,37 +6,21 @@ import star from "../../../src/assets/star.png";
 import basket from "../../../src/assets/bag.png";
 import BestSellersItem from "../../components/BestSellersItem";
 import hero from "../../assets/Horbaach Hair.png";
-import { bestSellers, description, similarProducts } from "../../data";
-import { useEffect, useState } from "react";
+import { bestSellers } from "../../utils/data";
+import { useParams } from "react-router-dom";
+import ItemsPerSize from "../../utils/helpers/ItemsPerSize";
 
 const ProductDetails = () => {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [displayedItems, setDisplayedItems] = useState(description.slice(0, 3));
-  const [displayedAlsoBy, setDisplayedAlsoBy] = useState(bestSellers.slice(0, 3));
-  const [displayedSimilar, setDisplayedSimilar] = useState(similarProducts.slice(0, 3));
+  const param = useParams();
+  const product = bestSellers.find(
+    (product) => product.id.toString() == param.id
+  );
 
-console.log(similarProducts);
+  const items = ItemsPerSize();
 
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
+  const descriptionsData = items.descriptions;
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (windowWidth <= 768) {
-      setDisplayedItems(description.slice(0, 3));
-      setDisplayedAlsoBy(bestSellers.slice(0, 2));
-      setDisplayedSimilar(similarProducts.slice(0, 2));
-    } else {
-      setDisplayedItems(description);
-      setDisplayedAlsoBy(bestSellers);
-      setDisplayedSimilar(similarProducts.slice(0,8));
-    }
-  }, [windowWidth]);
+  const displayedAlsoByData = items.displayedAlsoBy;
 
   return (
     <section className="px-5 pt-5 w-full mb-[250px] ">
@@ -88,9 +72,7 @@ console.log(similarProducts);
       {/* description */}
       <section className="relative space-y-4 mt-10 lg:mt-[550px]">
         <h4 className="text-gray-400">Horbaach</h4>
-        <h2 className="text-2xl lg:text-4xl font-light">
-          Horbaach Collagen Type 1 & 3 Gummies Natural fruit Flavored
-        </h2>
+        <h2 className="text-2xl lg:text-4xl font-light">{product?.title}</h2>
         <div className="flex w-[80%] lg:w-[25%] justify-between items-center text-sm">
           <div className="flex space-x-2 items-center">
             <img className="w-5 h-fit " src={star} alt="" />
@@ -122,7 +104,7 @@ console.log(similarProducts);
         </p>
 
         <ul className=" lg:grid lg:grid-cols-2 list-disc">
-          {displayedItems.map((desc, index) => {
+          {descriptionsData.map((desc, index) => {
             return (
               <li className="mb-4 lg:text-sm" key={index}>
                 {desc}
@@ -242,7 +224,7 @@ console.log(similarProducts);
       <section>
         <h2 className="text-4xl mt-14">Also By Horbaach</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
-          {displayedAlsoBy.map((item) => {
+          {displayedAlsoByData.map((item) => {
             return <BestSellersItem key={item.id} {...item} />;
           })}
         </div>
@@ -251,7 +233,7 @@ console.log(similarProducts);
       <section>
         <h2 className="text-4xl mt-14 tracking-wide">Similar Products</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
-          {displayedSimilar.map((item) => {
+          {displayedAlsoByData.map((item) => {
             return <BestSellersItem key={item.id} {...item} />;
           })}
         </div>
